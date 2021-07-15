@@ -1,6 +1,6 @@
 let express = require("express");
 let router = express.Router();
-let Plant = require("../models/plant.model");
+// let Plant = require("../models/plant.model");
 
 // get /plants
 // get /plants/:id
