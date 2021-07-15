@@ -1,6 +1,14 @@
-let PlantModel = require("../models/plant.model");
 let express = require("express");
 let router = express.Router();
+let Plant = require("../models/plant.model");
+
+// get /plants
+// get /plants/:id
+// get /plants/:id?user=uid
+
+// post /plants {}
+// put /plants/:id {}
+// delete /plants/:id
 
 router.post("/plant", (req, res) => {
   //req.body is made available by bodyParser in app.js
