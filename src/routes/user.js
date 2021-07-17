@@ -3,8 +3,8 @@ const User = require("../models/user.model");
 const auth = require("../middleware/auth");
 const router = express.Router();
 
-// * ======================================
-//TODO modify to only show public info
+// ======================================
+//TODO modify routes to only show public info
 router.get("/users", async (req, res) => {
   try {
     const users = await User.find({});
@@ -14,7 +14,6 @@ router.get("/users", async (req, res) => {
   }
 });
 
-//TODO modify to only show public info
 router.get("/users/:id", async (req, res) => {
   const userId = req.params.id;
   try {
@@ -25,7 +24,7 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
-// * ======================================
+// ======================================
 
 router.post("/users", async (req, res) => {
   const user = new User(req.body);
@@ -39,8 +38,8 @@ router.post("/users", async (req, res) => {
   }
 });
 
-//user login
-router.post("/users/login", async (req, res) => {
+//TODO user login
+router.post("/users/login", auth, async (req, res) => {
   try {
     const user = await User.findByCredentials(
       req.body.email,
