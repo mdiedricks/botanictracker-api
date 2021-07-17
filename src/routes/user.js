@@ -1,7 +1,9 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
 const User = require("../models/user.model");
+const auth = require("../middleware/auth");
+const router = express.Router();
 
+// * ======================================
 //TODO modify to only show public info
 router.get("/users", async (req, res) => {
   try {
@@ -23,22 +25,36 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
+// * ======================================
+
 router.post("/users", async (req, res) => {
-  const newUser = new User(req.body);
+  const user = new User(req.body);
+
   try {
-    await newUser.save();
-    res.status(201).send({ newUser });
+    await user.save();
+    const token = await user.generateAuthToken();
+    res.status(201).send({ user, token });
   } catch (error) {
     res.status(400).send(error);
   }
 });
 
 //user login
+router.post("/users/login", async (req, res) => {
+  try {
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    const token = await user.generateAuthToken();
+    res.send({ user, token });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
 //user logout
 //user logout all
 //user get "me"
-
-router.router.post;
 
 //TODO user update "me"
 //TODO update patch with property validation
