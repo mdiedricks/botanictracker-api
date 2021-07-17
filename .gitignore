@@ -1,5 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+./config/dev.env
+
 # dependencies
 /node_modules
 /.pnp
@@ -13,7 +15,6 @@
 
 # misc
 .DS_Store
-/config
 .env
 .env.local
 .env.development.local
@@ -25,4 +26,3 @@ yarn-debug.log*
 yarn-error.log*
 
 TODO.md
-dependencylist.md
