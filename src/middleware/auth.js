@@ -8,6 +8,7 @@ const User = require("../models/user.model");
 */
 
 const auth = async (req, res, next) => {
+  console.log("::Function:: auth");
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

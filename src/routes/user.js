@@ -3,30 +3,9 @@ const User = require("../models/user.model");
 const auth = require("../middleware/auth");
 const router = express.Router();
 
-// ======================================
-//TODO modify routes to only show public info
-router.get("/users", async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.send({ users });
-  } catch (error) {
-    res.status(400).send(error);
-  }
-});
-
-router.get("/users/:id", async (req, res) => {
-  const userId = req.params.id;
-  try {
-    const user = await User.find({ _id: userId });
-    res.status(200).send(user);
-  } catch (error) {
-    res.status(404).send(error);
-  }
-});
-
-// ======================================
-
+//User creation
 router.post("/users", async (req, res) => {
+  console.log("Route:: create user");
   const user = new User(req.body);
 
   try {
@@ -38,8 +17,9 @@ router.post("/users", async (req, res) => {
   }
 });
 
-//TODO user login
-router.post("/users/login", auth, async (req, res) => {
+// User Login/Logout
+router.post("/users/login", async (req, res) => {
+  console.log("Route:: login user");
   try {
     const user = await User.findByCredentials(
       req.body.email,
@@ -51,13 +31,67 @@ router.post("/users/login", auth, async (req, res) => {
     res.status(400).send(error);
   }
 });
-//user logout
-//user logout all
-//user get "me"
 
-//TODO user update "me"
-//TODO update patch with property validation
-router.patch("/users/:id", async (req, res) => {
+router.post("/users/logout", auth, async (req, res) => {
+  console.log("Route:: logout user");
+
+  try {
+    req.user.tokens = req.user.tokens.filter((tokenObject) => {
+      return tokenObject.token !== req.token;
+    });
+    await req.user.save();
+    res.send();
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.post("/users/logoutAll", auth, async (req, res) => {
+  console.log("Route:: logout all");
+  try {
+    req.user.tokens = [];
+    await req.user.save();
+    res.send();
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Explore users
+router.get("/users", async (req, res) => {
+  console.log("Route:: get all users");
+  try {
+    const users = await User.find({}, "name _id", {
+      limit: parseInt(req.query.limit),
+      skip: parseInt(req.query.skip),
+    }).exec();
+
+    res.send({ users });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+router.get("/users/:id", async (req, res) => {
+  console.log("Route:: get user by ID");
+  const userId = req.params.id;
+  try {
+    const user = await User.find({ _id: userId }, "name _id");
+    res.status(200).send(user);
+  } catch (error) {
+    res.status(404).send(error);
+  }
+});
+
+//user get "me"
+router.get("/users/me", auth, async (req, res) => {
+  console.log("Route:: get own user");
+  res.send(req.user);
+});
+
+//user update "me"
+router.patch("/users/me", auth, async (req, res) => {
+  console.log("Route:: update own user");
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "email", "password"];
   const isValidOperation = updates.every((update) => {
@@ -68,13 +102,9 @@ router.patch("/users/:id", async (req, res) => {
   }
 
   try {
-    const user = await User.findOne(req.params.id);
-    if (!user) {
-      return res.status(404).send("User does not exist");
-    }
-    updates.forEach((update) => (user[update] = req.body[update]));
-    await user.save();
-    res.send(user);
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
+    res.send(req.user);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -82,6 +112,7 @@ router.patch("/users/:id", async (req, res) => {
 
 //TODO user delete "me"
 router.delete("/users/:id", async (req, res) => {
+  console.log("Route:: delete own user");
   const userId = req.params.id;
   try {
     const deletedUser = await User.findByIdAndDelete(userId);

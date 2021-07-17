@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.methods.toJSON = function () {
+  console.log("::Function:: toJSON");
   const user = this;
   const userObject = user.toObject();
 
@@ -47,6 +48,7 @@ userSchema.methods.toJSON = function () {
 };
 
 userSchema.methods.generateAuthToken = async function () {
+  console.log("::Function:: generateAuthToken");
   const user = this;
   const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
   user.tokens = user.tokens.concat({ token });
@@ -56,6 +58,7 @@ userSchema.methods.generateAuthToken = async function () {
 };
 
 userSchema.statics.findByCredentials = async (email, password) => {
+  console.log("::Function:: findByCredentials");
   const user = await User.findOne({ email });
   if (!user) {
     throw new Error("Username and password combination are not correct");
@@ -68,6 +71,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 };
 
 userSchema.pre("save", async function (next) {
+  console.log("::Function:: presave");
   const user = this;
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 8);
