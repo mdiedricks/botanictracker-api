@@ -93,32 +93,32 @@ router.delete("/users/me", auth, async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
+});
 
-  //Explore users
-  router.get("/users", async (req, res) => {
-    console.log("Route:: get all users");
-    try {
-      const users = await User.find({}, "name _id", {
-        limit: parseInt(req.query.limit),
-        skip: parseInt(req.query.skip),
-      }).exec();
+//Explore users
+router.get("/users", async (req, res) => {
+  console.log("Route:: get all users");
+  try {
+    const users = await User.find({}, "name _id", {
+      limit: parseInt(req.query.limit),
+      skip: parseInt(req.query.skip),
+    }).exec();
 
-      res.send({ users });
-    } catch (error) {
-      res.status(400).send(error);
-    }
-  });
+    res.send({ users });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
 
-  router.get("/users/:id", async (req, res) => {
-    console.log("Route:: get user by ID");
-    const userId = req.params.id;
-    try {
-      const user = await User.find({ _id: userId }, "name _id");
-      res.status(200).send(user);
-    } catch (error) {
-      res.status(404).send(error);
-    }
-  });
+router.get("/users/:id", async (req, res) => {
+  console.log("Route:: get user by ID");
+  const userId = req.params.id;
+  try {
+    const user = await User.find({ _id: userId }, "name _id");
+    res.status(200).send(user);
+  } catch (error) {
+    res.status(404).send(error);
+  }
 });
 
 module.exports = router;
