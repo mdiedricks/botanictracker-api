@@ -21,7 +21,7 @@ router.post("/plants", auth, async (req, res) => {
 router.get("/plants", async (req, res) => {
   console.log("Route:: get plants [,by owner]");
   const match = {};
-  if (req.token !== "") {
+  if (req.query.owner) {
     match.owner = req.query.owner;
   }
   try {
