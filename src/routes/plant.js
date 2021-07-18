@@ -1,25 +1,14 @@
 let express = require("express");
 let router = express.Router();
-// let Plant = require("../models/plant.model");
+let Plant = require("../models/plant.model");
 
-// get /plants
-// get /plants/:id
-// get /plants/:id?user=uid
-
-// post /plants {}
-// put /plants/:id {}
-// delete /plants/:id
-
-router.post("/plant", (req, res) => {
-  //req.body is made available by bodyParser in app.js
+// create /plants {}
+router.post("/plants", (req, res) => {
   if (!req.body) {
-    //if there is no body in response
     return res.status(400).send("Request body is missing");
   }
 
-  //pass body to a new model
   let model = new PlantModel(req.body);
-  //tell mongoose to validate this and save it to the database
   model
     .save()
     .then((doc) => {
@@ -29,12 +18,11 @@ router.post("/plant", (req, res) => {
       res.status(201).send(doc);
     })
     .catch((err) => {
-      //instead of send, we reply with err object as json
       res.status(500).json(err);
     });
 });
-
-router.get("/plant", (req, res) => {
+// get /plants
+router.get("/plants", (req, res) => {
   if (!req.query.name) {
     return res.status(400).send(`Missing url parameter: name`);
   }
@@ -49,8 +37,12 @@ router.get("/plant", (req, res) => {
       res.status(500).json(err);
     });
 });
+// get /plants/:id
 
-router.put("/plant", (req, res) => {
+// get /plants/:id?user=uid
+
+// put /plants/:id {}
+router.put("/plants", (req, res) => {
   // ? check if req exists
   if (!req.query.name) {
     return res.status(400).send(`Missing url parameter: name`);
@@ -72,8 +64,8 @@ router.put("/plant", (req, res) => {
       res.status(500).json(err);
     });
 });
-
-router.delete("/plant", (req, res) => {
+// delete /plants/:id
+router.delete("/plants", (req, res) => {
   // ? check on the req
   if (!req.query.name) {
     return res.status(400).send(`Missing url parameter: name`);

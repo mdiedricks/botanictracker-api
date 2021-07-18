@@ -57,48 +57,23 @@ router.post("/users/logoutAll", auth, async (req, res) => {
   }
 });
 
-//Explore users
-router.get("/users", async (req, res) => {
-  console.log("Route:: get all users");
-  try {
-    const users = await User.find({}, "name _id", {
-      limit: parseInt(req.query.limit),
-      skip: parseInt(req.query.skip),
-    }).exec();
-
-    res.send({ users });
-  } catch (error) {
-    res.status(400).send(error);
-  }
-});
-
-router.get("/users/:id", async (req, res) => {
-  console.log("Route:: get user by ID");
-  const userId = req.params.id;
-  try {
-    const user = await User.find({ _id: userId }, "name _id");
-    res.status(200).send(user);
-  } catch (error) {
-    res.status(404).send(error);
-  }
-});
-
-//user get "me"
+// User Management
 router.get("/users/me", auth, async (req, res) => {
   console.log("Route:: get own user");
   res.send(req.user);
 });
 
-//user update "me"
 router.patch("/users/me", auth, async (req, res) => {
   console.log("Route:: update own user");
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "email", "password"];
-  const isValidOperation = updates.every((update) => {
-    allowedUpdates.includes(update);
-  });
+  const allowedUpdates = ["name", "email", "password", "age"];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+  console.log(isValidOperation);
+
   if (!isValidOperation) {
-    return res.send(400).send({ error: "Invalid fields updates!" });
+    return res.status(400).send({ error: "Invalid fields updates!" });
   }
 
   try {
@@ -110,16 +85,40 @@ router.patch("/users/me", auth, async (req, res) => {
   }
 });
 
-//TODO user delete "me"
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/me", auth, async (req, res) => {
   console.log("Route:: delete own user");
-  const userId = req.params.id;
   try {
-    const deletedUser = await User.findByIdAndDelete(userId);
-    res.status(204).send(deletedUser);
+    await req.user.remove();
+    res.send(req.user);
   } catch (error) {
-    res.status(404).send(error);
+    res.status(500).send(error);
   }
+
+  //Explore users
+  router.get("/users", async (req, res) => {
+    console.log("Route:: get all users");
+    try {
+      const users = await User.find({}, "name _id", {
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip),
+      }).exec();
+
+      res.send({ users });
+    } catch (error) {
+      res.status(400).send(error);
+    }
+  });
+
+  router.get("/users/:id", async (req, res) => {
+    console.log("Route:: get user by ID");
+    const userId = req.params.id;
+    try {
+      const user = await User.find({ _id: userId }, "name _id");
+      res.status(200).send(user);
+    } catch (error) {
+      res.status(404).send(error);
+    }
+  });
 });
 
 module.exports = router;
