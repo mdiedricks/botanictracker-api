@@ -70,7 +70,6 @@ router.patch("/users/me", auth, async (req, res) => {
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update)
   );
-  console.log(isValidOperation);
 
   if (!isValidOperation) {
     return res.status(400).send({ error: "Invalid fields updates!" });

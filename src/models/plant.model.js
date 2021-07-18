@@ -24,7 +24,7 @@ const plantSchema = new mongoose.Schema(
       },
     },
     owner: {
-      type: mongooseSchema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
