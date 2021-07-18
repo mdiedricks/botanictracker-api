@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Plant = require("../models/plant.model");
 const auth = require("../middleware/auth");
+const bindPlant = require("../middleware/bindPlant.js");
 
 router.post("/plants", auth, async (req, res) => {
   console.log("Route:: create new plant");
@@ -46,31 +47,35 @@ router.get("/plants/:id", async (req, res) => {
   }
 });
 
-//* patch /plants/:id {}
-router.patch("/plants", (req, res) => {
+router.patch("/plants/:id", auth, bindPlant, async (req, res) => {
   console.log("Route:: update plant by ID");
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["name", "species", "age"];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+
+  if (!isValidOperation) {
+    return res.status(400).send({ error: "Invalid fields updates!" });
+  }
 
   try {
+    updates.forEach((update) => (req.plant[update] = req.body[update]));
+    await req.plant.save();
+    res.send(req.plant);
   } catch (error) {
     res.status(404).send(error);
   }
 });
 
-//* delete /plants/:id
-router.delete("/plants", (req, res) => {
-  // ? check on the req
-  if (!req.query.name) {
-    return res.status(400).send(`Missing url parameter: name`);
+router.delete("/plants/:id", auth, bindPlant, async (req, res) => {
+  console.log("Route:: delete plant by ID");
+  try {
+    await req.plant.delete();
+    res.send(req.plant);
+  } catch (error) {
+    res.status(404).send(error);
   }
-  PlantModel.findOneAndRemove({
-    name: req.query.name,
-  })
-    .then((doc) => {
-      res.json(doc);
-    })
-    .catch((err) => {
-      res.status(500).json(err);
-    });
 });
 
 module.exports = router;
