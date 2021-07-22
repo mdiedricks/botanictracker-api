@@ -13,7 +13,7 @@ router.post("/plants", auth, async (req, res) => {
     await plant.save();
     res.status(201).send(plant);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ msg: error.message });
   }
 });
 
@@ -31,7 +31,7 @@ router.get("/plants", async (req, res) => {
     }).exec();
     res.send(plants);
   } catch (error) {
-    res.status(404).send(error);
+    res.status(404).send({ msg: error.message });
   }
 });
 
@@ -42,7 +42,7 @@ router.get("/plants/:id", async (req, res) => {
     const plant = await Plant.find({ _id: plantId }, "name _id");
     res.status(200).send(plant);
   } catch (error) {
-    res.status(404).send(error);
+    res.status(404).send({ msg: error.message });
   }
 });
 
@@ -63,7 +63,7 @@ router.patch("/plants/:id", auth, bindPlant, async (req, res) => {
     await req.plant.save();
     res.send(req.plant);
   } catch (error) {
-    res.status(404).send(error);
+    res.status(404).send({ msg: error.message });
   }
 });
 
@@ -73,7 +73,7 @@ router.delete("/plants/:id", auth, bindPlant, async (req, res) => {
     await req.plant.delete();
     res.send(req.plant);
   } catch (error) {
-    res.status(404).send(error);
+    res.status(404).send({ msg: error.message });
   }
 });
 

@@ -13,7 +13,7 @@ router.post("/users", async (req, res) => {
     const token = await user.generateAuthToken();
     res.status(201).send({ user, token });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ msg: error.message });
   }
 });
 
@@ -28,7 +28,7 @@ router.post("/users/login", async (req, res) => {
     const token = await user.generateAuthToken();
     res.send({ user, token });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ msg: error.message });
   }
 });
 
@@ -40,9 +40,9 @@ router.post("/users/logout", auth, async (req, res) => {
       return tokenObject.token !== req.token;
     });
     await req.user.save();
-    res.send();
+    res.send(req.user);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ msg: error.message });
   }
 });
 
@@ -53,7 +53,7 @@ router.post("/users/logoutAll", auth, async (req, res) => {
     await req.user.save();
     res.send();
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ msg: error.message });
   }
 });
 
@@ -80,7 +80,7 @@ router.patch("/users/me", auth, async (req, res) => {
     await req.user.save();
     res.send(req.user);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ msg: error.message });
   }
 });
 
@@ -90,7 +90,7 @@ router.delete("/users/me", auth, async (req, res) => {
     await req.user.remove();
     res.send(req.user);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ msg: error.message });
   }
 });
 
@@ -105,7 +105,7 @@ router.get("/users", async (req, res) => {
 
     res.send({ users });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ msg: error.message });
   }
 });
 
@@ -116,7 +116,7 @@ router.get("/users/:id", async (req, res) => {
     const user = await User.find({ _id: userId }, "name _id");
     res.status(200).send(user);
   } catch (error) {
-    res.status(404).send(error);
+    res.status(404).send({ msg: error.message });
   }
 });
 
