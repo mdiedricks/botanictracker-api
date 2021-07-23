@@ -19,7 +19,11 @@ router.post("/plants", auth, async (req, res) => {
 
 // GET /plants?owner=:id
 router.get("/plants", async (req, res) => {
-  console.log("Route:: get plants [,by owner]");
+  if (!req.query.owner) {
+    console.log("Route:: get plants ");
+  } else {
+    console.log(`Route:: get plants ${req.user._id}`);
+  }
   const match = {};
   if (req.query.owner) {
     match.owner = req.query.owner;
