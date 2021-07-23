@@ -22,7 +22,7 @@ router.get("/plants", async (req, res) => {
   if (!req.query.owner) {
     console.log("Route:: get plants ");
   } else {
-    console.log(`Route:: get plants ${req.user._id}`);
+    console.log(`Route:: get plants ${req.query.owner}`);
   }
   const match = {};
   if (req.query.owner) {
